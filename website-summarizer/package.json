@@ -1,0 +1,16 @@
+
+{
+  "name": "website-summarizer",
+  "version": "1.0.0",
+  "description": "AI-based website summarization using an LLM",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "cheerio": "^1.0.0",
+    "openai": "^4.77.0",
+    "dotenv": "^16.4.7"
+  }
+}
