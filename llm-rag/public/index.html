@@ -1,0 +1,168 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Document Assistant</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #eef1ff;
+      margin: 0;
+      padding: 30px 15px;
+      color: #252545;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 8px 25px #00000015;
+    }
+
+    h1 {
+      color: #5145cd;
+      text-align: center;
+    }
+
+    p {
+      line-height: 1.5;
+      color: #555;
+    }
+
+    input[type="file"],
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      margin: 12px 0;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    button {
+      background: #5145cd;
+      color: white;
+      padding: 12px 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #392eaa;
+    }
+
+    #message, #answer {
+      margin-top: 18px;
+      padding: 14px;
+      border-radius: 8px;
+      background: #f2f1ff;
+      white-space: pre-wrap;
+    }
+
+    h3 {
+      margin-top: 28px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>AI Document Assistant</h1>
+    <p>Upload a text document and ask questions about its contents using AI.</p>
+
+    <h3>1. Upload Document</h3>
+    <form id="uploadForm">
+      <input type="file" id="document" accept=".txt" required>
+      <button type="submit">Upload Document</button>
+    </form>
+
+    <div id="message"></div>
+
+    <h3>2. Ask a Question</h3>
+    <form id="questionForm">
+      <input
+        type="text"
+        id="question"
+        placeholder="Enter your question..."
+        required
+      >
+      <button type="submit">Get Answer</button>
+    </form>
+
+    <div id="answer"></div>
+  </div>
+
+  <script>
+    const uploadForm = document.getElementById("uploadForm");
+    const questionForm = document.getElementById("questionForm");
+
+    uploadForm.addEventListener("submit", async function(event) {
+      event.preventDefault();
+
+      const file = document.getElementById("document").files[0];
+
+      if (!file) {
+        document.getElementById("message").textContent =
+          "Please select a text file.";
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("document", file);
+
+      document.getElementById("message").textContent =
+        "Uploading document...";
+
+      try {
+        const response = await fetch("/api/upload", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) throw new Error(data.message);
+
+        document.getElementById("message").textContent =
+          data.message + " Total chunks: " + data.totalChunks;
+      } catch (error) {
+        document.getElementById("message").textContent = error.message;
+      }
+    });
+
+    questionForm.addEventListener("submit", async function(event) {
+      event.preventDefault();
+
+      const question = document.getElementById("question").value;
+
+      document.getElementById("answer").textContent =
+        "Generating answer...";
+
+      try {
+        const response = await fetch("/api/ask", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ question })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) throw new Error(data.message);
+
+        document.getElementById("answer").textContent =
+          data.answer || data.message;
+      } catch (error) {
+        document.getElementById("answer").textContent = error.message;
+      }
+    });
+  </script>
+</body>
+</html>
