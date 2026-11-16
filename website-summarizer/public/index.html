@@ -1,0 +1,148 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Website Summarizer</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 25px;
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #e7eaff, #fce7f3);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 650px;
+      padding: 35px;
+      background: white;
+      border-radius: 18px;
+      box-shadow: 0 10px 35px #00000018;
+    }
+
+    h1 {
+      text-align: center;
+      color: #5145cd;
+    }
+
+    .description {
+      text-align: center;
+      color: #666;
+      line-height: 1.6;
+    }
+
+    input {
+      width: 100%;
+      padding: 15px;
+      margin: 20px 0 12px;
+      border: 1px solid #ccc;
+      border-radius: 9px;
+      font-size: 15px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 9px;
+      background: #5145cd;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #392eaa;
+    }
+
+    #result {
+      margin-top: 25px;
+      padding: 18px;
+      background: #f3f2ff;
+      border-radius: 10px;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    #result h3 {
+      color: #5145cd;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>AI Website Summarizer</h1>
+
+    <p class="description">
+      Enter any website address and let AI generate
+      a simple summary of its content.
+    </p>
+
+    <form id="summaryForm">
+      <input
+        type="text"
+        id="website"
+        placeholder="Example: https://example.com"
+        required
+      >
+
+      <button type="submit">Summarize Website</button>
+    </form>
+
+    <div id="result">
+      Your website summary will appear here.
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById("summaryForm");
+
+    form.addEventListener("submit", async function(event) {
+      event.preventDefault();
+
+      const website = document.getElementById("website").value.trim();
+      const result = document.getElementById("result");
+
+      result.textContent = "Analyzing website... Please wait.";
+
+      try {
+        const response = await fetch("/api/summarize", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ website })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message);
+        }
+
+        result.textContent =
+          "Website: " + data.website +
+          "\nTitle: " + data.title +
+          "\n\nSummary:\n" + data.summary;
+
+      } catch (error) {
+        result.textContent = "Error: " + error.message;
+      }
+    });
+  </script>
+</body>
+</html>
