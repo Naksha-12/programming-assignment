@@ -1,4 +1,3 @@
-
 require("dotenv").config();
 
 const express = require("express");
@@ -6,8 +5,11 @@ const multer = require("multer");
 const OpenAI = require("openai");
 
 const app = express();
+
 app.use(express.json());
-express.json());
+app.use(express.static("public"));
+
+
 
 
 const upload = multer({
