@@ -7,6 +7,8 @@ const OpenAI = require("openai");
 
 const app = express();
 app.use(express.json());
+express.json());
+
 
 const upload = multer({
   storage: multer.memoryStorage(),
